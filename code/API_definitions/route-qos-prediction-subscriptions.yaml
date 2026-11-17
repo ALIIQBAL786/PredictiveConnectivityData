@@ -415,7 +415,7 @@ components:
         - route
       properties:
         route:
-          $ref: "../route-qos-prediction.yaml#/components/schemas/Route"
+          $ref: "route-qos-prediction.yaml#/components/schemas/Route"
         qosRequirements:
           type: array
           description: |
@@ -423,7 +423,7 @@ components:
             measured against (for example the threshold a degradation event
             fires below).
           items:
-            $ref: "../route-qos-prediction.yaml#/components/schemas/QosRequirement"
+            $ref: "route-qos-prediction.yaml#/components/schemas/QosRequirement"
         segmentIds:
           type: array
           description: Optional subset of segment identifiers to receive events for.
