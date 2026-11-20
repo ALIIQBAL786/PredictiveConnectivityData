@@ -16,7 +16,7 @@ info:
 
     # Filtering and anti-spam
 
-    `subscriptionDetail.route` is mandatory and scopes the subscription to a specific route, evaluated against the declared `serviceLevel`. `segmentIds` optionally restricts notifications to a subset of the route's segments; for long routes this is the primary anti-spam mechanism, since without it a subscriber would receive events for every segment. `area` optionally adds a circular geofence as a further refinement.
+    `subscriptionDetail.route` is mandatory and scopes the subscription to a specific route, evaluated against the declared `serviceLevel`. `segmentIds` optionally restricts notifications to a subset of the route's segments; for long routes this is the primary anti-spam mechanism, since without it a subscriber would receive events for every segment. `area` optionally adds a circular geofence as a further refinement, but how it combines with `segmentIds` is not yet defined, so the two MUST NOT be set together; a request setting both is rejected with `400 INVALID_ARGUMENT`.
 
     <!-- CAMARA:MANDATORY:authorization-and-authentication:BEGIN -->
 
@@ -448,6 +448,9 @@ components:
         via `route` and `serviceLevel`; segment and area scoping are optional
         refinements. `segmentIds` is the primary anti-spam mechanism for long
         routes: without it, a subscriber receives events for every segment.
+        `area` and `segmentIds` MUST NOT both be set, since how they combine
+        is not yet defined; a request setting both is rejected with
+        `400 INVALID_ARGUMENT`.
       type: object
       required:
         - route

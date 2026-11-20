@@ -561,8 +561,13 @@ components:
         - AREA_NOT_SUPPORTED
         - OPERATION_NOT_COMPLETED
     TimedConnectivityData:
+      description: Represents a time interval with connectivity data for the cells or route segments in the area. Time interval length is determined by the implementation. The request startTime or the request endTime have to be fully covered by the intervals. For example, if the intervals are 1-hour long and the input date range were [2024-01-03T11:25:00Z to 2024-01-03T12:45:00Z] it would contain 2 intervals (Interval from 2024-01-03T11:00:00Z to 2024-01-03T12:00:00Z and interval from 2024-01-03T12:00:00Z to 2024-01-03T13:00:00Z). Carries `cellConnectivityData` when the request's `area.areaType` is `POLYGON` or `GEOHASHLIST`, or `segmentConnectivityData` when it is `ROUTE`; the two are mutually exclusive.
+      oneOf:
+        - $ref: '#/components/schemas/TimedCellConnectivityData'
+        - $ref: '#/components/schemas/TimedSegmentConnectivityData'
+    TimedConnectivityDataBase:
       type: object
-      description: Represents a time interval with connectivity data for the cells or route segments in the area. Time interval length is determined by the implementation. The request startTime or the request endTime have to be fully covered by the intervals. For example, if the intervals are 1-hour long and the input date range were [2024-01-03T11:25:00Z to 2024-01-03T12:45:00Z] it would contain 2 intervals (Interval from 2024-01-03T11:00:00Z to 2024-01-03T12:00:00Z and interval from 2024-01-03T12:00:00Z to 2024-01-03T13:00:00Z).
+      description: Time-interval fields common to both cell-based and segment-based connectivity data.
       properties:
         startTime:
           description: Interval start time.
@@ -574,17 +579,29 @@ components:
           allOf:
             - $ref: '#/components/schemas/DateTime'
           example: '2023-07-03T11:00:00Z'
-        cellConnectivityData:
-          description: Connectivity data per grid cell. Present when the request's `area.areaType` is `POLYGON` or `GEOHASHLIST`. Mutually exclusive with `segmentConnectivityData`.
-          allOf:
-            - $ref: '#/components/schemas/CellConnectivityDataArray'
-        segmentConnectivityData:
-          description: Connectivity data per route segment. Present when the request's `area.areaType` is `ROUTE`. Mutually exclusive with `cellConnectivityData`.
-          allOf:
-            - $ref: '#/components/schemas/SegmentConnectivityDataArray'
       required:
         - startTime
         - endTime
+    TimedCellConnectivityData:
+      description: Time interval with connectivity data per grid cell, for a `POLYGON` or `GEOHASHLIST` request.
+      allOf:
+        - $ref: '#/components/schemas/TimedConnectivityDataBase'
+        - type: object
+          required:
+            - cellConnectivityData
+          properties:
+            cellConnectivityData:
+              $ref: '#/components/schemas/CellConnectivityDataArray'
+    TimedSegmentConnectivityData:
+      description: Time interval with connectivity data per route segment, for a `ROUTE` request.
+      allOf:
+        - $ref: '#/components/schemas/TimedConnectivityDataBase'
+        - type: object
+          required:
+            - segmentConnectivityData
+          properties:
+            segmentConnectivityData:
+              $ref: '#/components/schemas/SegmentConnectivityDataArray'
     CellConnectivityDataArray:
       type: array
       description: Connectivity data for the different cells in a concrete time range.
